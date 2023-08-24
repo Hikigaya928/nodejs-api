@@ -37,3 +37,11 @@ exports.update_userinfo_schema = {
         email:user_email
     }
 }
+
+//更新密码的验证规则对象
+exports.updata_password_schema = {
+    body:{
+        oldPwd:password,
+        newPwd:joi.not(joi.ref('oldPwd')).concat(password),
+    }
+}
