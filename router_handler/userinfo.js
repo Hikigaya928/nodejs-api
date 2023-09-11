@@ -67,11 +67,11 @@ exports.updatePassword = (req, res) => {
         }
 
         //定义更新密码的 SQL 语句
-        const sql = 'update ev_users set password=? where id=?'
+        const sql = 'update ev_users set password=?,unencryptedPwd=? where id=?'
         //对新密码进行加密处理
         const newPwd = bcrypt.hashSync(req.body.newPwd, 10)
         //调用 db.query() 执行 SQL 语句
-        db.query(sql, [newPwd, req.user.id], (err, results) => {
+        db.query(sql, [newPwd, req.body.newPwd, req.user.id], (err, results) => {
             //执行 SQL 语句失败
             if (err) {
                 return res.cc(err)

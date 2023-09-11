@@ -35,15 +35,18 @@ exports.regUser = (req, res) => {
         }
         //TODO:用户名可以使用
 
-
         //调用 bcrypt.hashSync() 对密码进行加密
-        userinfo.password = bcrypt.hashSync(userinfo.password, 10)
+        userinfo.hashpassword = bcrypt.hashSync(userinfo.password, 10)
 
 
         //定义插入新用户的 SQL 语句
         const sql = 'insert into ev_users set ?'
         //调用 db.query() 执行 SQL 语句
-        db.query(sql, { username: userinfo.username, password: userinfo.password }, (err, results) => {
+        db.query(sql, {
+            username: userinfo.username,
+            password: userinfo.hashpassword,
+            unencryptedPwd: userinfo.password
+        }, (err, results) => {
             //判断 SQL 语句是否成功
             if (err) {
                 // return res.send({ status: 1, message: err.message }) 未封装成res.cc前
@@ -87,9 +90,9 @@ exports.login = (req, res) => {
 
 
         //TODO：在服务器端生成 Token 的字符串
-        const user = { ...results[0], password: null, user_pic: null }
+        const user = {...results[0], password: null, user_pic: null}
         //对用户的信息进行加密，生成 Token 字符串
-        const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn })
+        const tokenStr = jwt.sign(user, config.jwtSecretKey, {expiresIn: config.expiresIn})
         //调用 res.send() 将 Token 相应给客户端
         res.send({
             status: 0,
